@@ -22,7 +22,7 @@ import {
     collection, addDoc, query, where, onSnapshot, deleteDoc, doc, setDoc, getDoc 
 } from 'firebase/firestore'; 
 
-// --- CALENDAR ICONS ---
+// --- ICONS ---
 const MenuIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>;
 const BackIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>;
 const SearchIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>;
@@ -33,12 +33,31 @@ const SunIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="#FDB
 const MoonIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="#9CA3AF"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>;
 
 // --- LOGIN ICONS ---
-const UserIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{opacity: 0.7}}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
-const LockIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{opacity: 0.7}}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
-const EmailIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{opacity: 0.7}}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>;
-const EyeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>;
-const EyeOffIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>;
-const GoogleIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,7.336,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>;
+const UserIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{opacity: 0.7}}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
+const LockIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{opacity: 0.7}}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
+const EmailIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{opacity: 0.7}}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>;
+const EyeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>;
+const EyeOffIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>;
+const GoogleIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,7.336,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>;
+
+// --- HELPER FOR INPUTS (Prevent Overflow Fix) ---
+const InputWithIcon = ({ icon, ...props }) => (
+  <div style={{ position: 'relative', marginBottom: '20px', width: '100%', boxSizing: 'border-box' }}>
+    <div style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center' }}>{icon}</div>
+    <input {...props} style={{
+      width: '100%', 
+      maxWidth: '100%', 
+      padding: '12px 15px 12px 45px', 
+      border: 'none', 
+      borderRadius: '50px', 
+      background: 'rgba(255, 255, 255, 0.9)', 
+      fontSize: '16px', 
+      outline: 'none', 
+      boxSizing: 'border-box', 
+      color: '#333'
+    }} />
+  </div>
+);
 
 function App() {
   const calendarRef = useRef(null);
@@ -170,7 +189,6 @@ function App() {
     }
   };
 
-  // Prevent Delete in Month View
   const handleEventClick = async (info) => { 
     if (info.view.type === 'dayGridMonth') return; 
     if (confirm(`Delete "${info.event.title}"?`)) await deleteDoc(doc(db, "events", info.event.id));
@@ -181,7 +199,7 @@ function App() {
 
   if (loading) return <div style={{height:'100dvh', display:'flex', alignItems:'center', justifyContent:'center', background: '#121212', color: 'white'}}>Loading...</div>;
   
-  // --- LOGIN UI (FIXED) ---
+  // --- LOGIN UI ---
   if (!user) return (
     <div style={{
       position: 'fixed', top: 0, left: 0, width: '100%', height: '100dvh', overflow: 'hidden',
@@ -193,17 +211,20 @@ function App() {
         background: 'rgba(255, 255, 255, 0.08)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        padding: '40px 30px', borderRadius: '30px',
+        padding: '25px 20px',
+        borderRadius: '30px',
         border: '1px solid rgba(255, 255, 255, 0.2)',
         boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
-        width: '90%', maxWidth: '400px', textAlign: 'center', color: 'white',
-        boxSizing: 'border-box' // Ensure padding doesn't overflow width
+        width: '85%', maxWidth: '350px',
+        textAlign: 'center', color: 'white',
+        boxSizing: 'border-box',
+        maxHeight: '85vh', overflowY: 'auto'
       }}>
-        <h1 style={{ fontSize: '32px', fontWeight: '700', margin: '0 0 10px 0', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>Neeloor Parish</h1>
-        <p style={{ fontSize: '15px', opacity: 0.9, margin: '0 0 30px 0' }}>{isForgotPassword ? "Reset Password" : isRegistering ? "Create Account" : "Sign In"}</p>
+        <h1 style={{ fontSize: '28px', fontWeight: '700', margin: '0 0 8px 0', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>Neeloor Parish</h1>
+        <p style={{ fontSize: '14px', opacity: 0.9, margin: '0 0 25px 0' }}>{isForgotPassword ? "Reset Password" : isRegistering ? "Create Account" : "Sign In"}</p>
 
-        {loginError && <div style={{ background: 'rgba(220, 53, 69, 0.8)', padding: '10px', borderRadius: '12px', marginBottom: '20px', fontSize: '14px' }}>{loginError}</div>}
-        {successMsg && <div style={{ background: 'rgba(40, 167, 69, 0.8)', padding: '10px', borderRadius: '12px', marginBottom: '20px', fontSize: '14px' }}>{successMsg}</div>}
+        {loginError && <div style={{ background: 'rgba(220, 53, 69, 0.8)', padding: '10px', borderRadius: '12px', marginBottom: '20px', fontSize: '13px' }}>{loginError}</div>}
+        {successMsg && <div style={{ background: 'rgba(40, 167, 69, 0.8)', padding: '10px', borderRadius: '12px', marginBottom: '20px', fontSize: '13px' }}>{successMsg}</div>}
 
         <form onSubmit={isForgotPassword ? handleForgotPassword : (isRegistering ? handleRegister : handleUsernameLogin)}>
           {isRegistering && !isForgotPassword && <InputWithIcon icon={<UserIcon />} type="text" placeholder="Full Name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required />}
@@ -211,35 +232,43 @@ function App() {
           {(isRegistering || isForgotPassword) && <InputWithIcon icon={<EmailIcon />} type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />}
           
           {!isForgotPassword && (
-            <div style={{ position: 'relative', marginBottom: '20px', boxSizing: 'border-box' }}>
+            <div style={{ position: 'relative', marginBottom: '20px', width: '100%', boxSizing: 'border-box' }}>
               <div style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', display: 'flex' }}><LockIcon /></div>
-              {/* PASSWORD INPUT WITH FIXED STYLING */}
+              {/* PASSWORD INPUT - OVERFLOW FIX & TOGGLE ENABLED */}
               <input type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required 
                 style={{
-                  width: '100%', maxWidth: '100%', padding: '14px 50px 14px 45px', border: 'none', borderRadius: '50px', 
-                  background: 'rgba(255, 255, 255, 0.9)', fontSize: '16px', outline: 'none', boxSizing: 'border-box', color: '#333'
+                  width: '100%', 
+                  maxWidth: '100%', 
+                  padding: '12px 45px 12px 45px', 
+                  border: 'none', 
+                  borderRadius: '50px', 
+                  background: 'rgba(255, 255, 255, 0.9)', 
+                  fontSize: '16px', 
+                  outline: 'none', 
+                  boxSizing: 'border-box', 
+                  color: '#333'
                 }} 
               />
               <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#666', display: 'flex' }}>{showPassword ? <EyeOffIcon /> : <EyeIcon />}</button>
             </div>
           )}
 
-          {!isRegistering && !isForgotPassword && <div style={{ textAlign: 'right', marginBottom: '25px' }}><button type="button" onClick={() => setIsForgotPassword(true)} style={{ background: 'none', border: 'none', color: 'white', fontSize: '14px', cursor: 'pointer', opacity: 0.9, textDecoration: 'underline' }}>Forgot Password?</button></div>}
+          {!isRegistering && !isForgotPassword && <div style={{ textAlign: 'right', marginBottom: '25px' }}><button type="button" onClick={() => setIsForgotPassword(true)} style={{ background: 'none', border: 'none', color: 'white', fontSize: '13px', cursor: 'pointer', opacity: 0.9, textDecoration: 'underline' }}>Forgot Password?</button></div>}
 
-          <button type="submit" style={{width: '100%', padding: '14px', border: 'none', borderRadius: '50px', background: 'linear-gradient(135deg, #1e3c72, #2a5298)', color: 'white', fontSize: '18px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 5px 15px rgba(42, 82, 152, 0.4)', marginBottom: isForgotPassword ? '20px' : '0'}}>{isForgotPassword ? "Send Link" : isRegistering ? "Sign Up" : "Sign In"}</button>
+          <button type="submit" style={{width: '100%', padding: '14px', border: 'none', borderRadius: '50px', background: 'linear-gradient(135deg, #1e3c72, #2a5298)', color: 'white', fontSize: '16px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 5px 15px rgba(42, 82, 152, 0.4)', marginBottom: isForgotPassword ? '20px' : '0'}}>{isForgotPassword ? "Send Link" : isRegistering ? "Sign Up" : "Sign In"}</button>
         </form>
 
-        {isForgotPassword && <button type="button" onClick={() => setIsForgotPassword(false)} style={{ background: 'none', border: 'none', color: 'white', fontSize: '15px', cursor: 'pointer', textDecoration: 'underline', opacity: 0.9 }}>Back to Login</button>}
+        {isForgotPassword && <button type="button" onClick={() => setIsForgotPassword(false)} style={{ background: 'none', border: 'none', color: 'white', fontSize: '14px', cursor: 'pointer', textDecoration: 'underline', opacity: 0.9 }}>Back to Login</button>}
 
         {!isForgotPassword && (
           <>
-            <div style={{ display: 'flex', alignItems: 'center', margin: '25px 0' }}><div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.3)' }}></div><span style={{ padding: '0 15px', fontSize: '14px', opacity: 0.8 }}>OR</span><div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.3)' }}></div></div>
-            <button onClick={handleGoogleLogin} style={{width: '100%', padding: '12px', border: 'none', borderRadius: '50px', background: 'white', color: '#333', fontSize: '16px', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)'}}><GoogleIcon /> Continue with Google</button>
-            <div style={{ marginTop: '30px', fontSize: '15px' }}><span style={{ opacity: 0.9 }}>{isRegistering ? "Have an account? " : "New here? "}</span><button type="button" onClick={() => setIsRegistering(!isRegistering)} style={{ background: 'none', border: 'none', color: 'white', fontWeight: '700', fontSize: '15px', cursor: 'pointer', textDecoration: 'underline' }}>{isRegistering ? "Sign In" : "Register"}</button></div>
+            <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0' }}><div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.3)' }}></div><span style={{ padding: '0 15px', fontSize: '13px', opacity: 0.8 }}>OR</span><div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.3)' }}></div></div>
+            <button onClick={handleGoogleLogin} style={{width: '100%', padding: '12px', border: 'none', borderRadius: '50px', background: 'white', color: '#333', fontSize: '15px', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)'}}><GoogleIcon /> Continue with Google</button>
+            <div style={{ marginTop: '25px', fontSize: '14px' }}><span style={{ opacity: 0.9 }}>{isRegistering ? "Have an account? " : "New here? "}</span><button type="button" onClick={() => setIsRegistering(!isRegistering)} style={{ background: 'none', border: 'none', color: 'white', fontWeight: '700', fontSize: '14px', cursor: 'pointer', textDecoration: 'underline' }}>{isRegistering ? "Sign In" : "Register"}</button></div>
           </>
         )}
       </div>
-      <div style={{ position: 'absolute', bottom: '20px', color: 'rgba(255,255,255,0.6)', fontSize: '11px' }}>© 2025 Neeloor Parish</div>
+      <div style={{ position: 'absolute', bottom: '15px', color: 'rgba(255,255,255,0.6)', fontSize: '11px' }}>© 2025 Neeloor Parish</div>
     </div>
   );
 
@@ -258,11 +287,17 @@ function App() {
   return (
     <div className="mobile-container" style={{height:'100dvh', display:'flex', flexDirection:'column', overflow:'hidden', backgroundColor: 'var(--bg-color)', color: 'var(--text-color)', ...appStyle}}>
       <style>{`
+        /* --- CALENDAR OVERFLOW & STYLING --- */
         .fc-daygrid-day-frame { overflow: hidden !important; max-height: 100% !important; }
         .fc-daygrid-event { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-radius: 4px; font-size: 11px; padding: 1px 4px; }
         .fc-highlight { background: rgba(66, 133, 244, 0.15) !important; border: 2px solid #4285F4 !important; border-radius: 6px !important; opacity: 1 !important; }
         .fc-day[data-date="${selectedDate}"] .fc-daygrid-day-frame { background-color: var(--highlight-bg) !important; border: 2px solid #4285F4; border-radius: 8px; box-shadow: 0 0 8px rgba(66, 133, 244, 0.4); }
-        .fc-col-header-cell.fc-day-sun a, .fc-col-header-cell.fc-day-sat a, .fc-daygrid-day.fc-day-sun .fc-daygrid-day-number, .fc-daygrid-day.fc-day-sat .fc-daygrid-day-number { color: #ea4335 !important; }
+        
+        /* --- RED SUNDAYS --- */
+        .fc-col-header-cell.fc-day-sun a { color: #ea4335 !important; text-decoration: none; }
+        .fc-daygrid-day.fc-day-sun .fc-daygrid-day-number { color: #ea4335 !important; }
+
+        .fc-col-header-cell.fc-day-sat a, .fc-daygrid-day.fc-day-sat .fc-daygrid-day-number { color: var(--text-color) !important; }
         .fc-theme-standard td, .fc-theme-standard th { border-color: var(--cal-border) !important; }
         .fc-col-header-cell-cushion, .fc-daygrid-day-number, .fc-list-day-text, .fc-list-day-side-text { color: var(--text-color) !important; }
         .fc-timegrid-slot-label-cushion { color: var(--sub-text) !important; }
@@ -391,15 +426,5 @@ function App() {
     </div>
   );
 }
-
-const InputWithIcon = ({ icon, ...props }) => (
-  <div style={{ position: 'relative', marginBottom: '20px', boxSizing: 'border-box' }}>
-    <div style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center' }}>{icon}</div>
-    <input {...props} style={{
-      width: '100%', maxWidth: '100%', padding: '14px 20px 14px 45px', border: 'none', borderRadius: '50px', 
-      background: 'rgba(255, 255, 255, 0.9)', fontSize: '16px', outline: 'none', boxSizing: 'border-box', color: '#333'
-    }} />
-  </div>
-);
 
 export default App;
