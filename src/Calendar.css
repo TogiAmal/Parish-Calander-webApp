@@ -1,0 +1,53 @@
+/* src/Calendar.css */
+:root {
+  --fc-button-text-color: #3c4043;
+  --fc-button-bg-color: #fff;
+  --fc-button-border-color: #dadce0;
+  --fc-button-hover-bg-color: #f1f3f4;
+  --fc-button-active-bg-color: #e8f0fe;
+  --fc-today-bg-color: transparent;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.google-calendar-container {
+  padding: 20px;
+  background: white;
+  height: 100vh;
+}
+
+/* Toolbar Buttons */
+.fc .fc-button {
+  background-color: transparent;
+  border: 1px solid #dadce0;
+  color: #3c4043;
+  text-transform: capitalize;
+  border-radius: 4px;
+  box-shadow: none !important;
+}
+
+.fc .fc-button:hover {
+  background-color: #f1f3f4;
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+  background-color: #e8f0fe;
+  color: #1967d2;
+}
+
+/* Highlight Today */
+.fc .fc-day-today .fc-daygrid-day-number {
+  background-color: #1a73e8;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px;
+}
