@@ -1,9 +1,9 @@
 {
-  "short_name": "Neeloor Parish",
-  "name": "Neeloor Parish Calendar",
+  "short_name": "Parish Calendar ",
+  "name": " Parish Calendar",
   "icons": [
     {
-      "src": "icon.jpg",
+      "src": "Newicon.jpg",
       "sizes": "512x512",
       "type": "image/jpeg"
     }
