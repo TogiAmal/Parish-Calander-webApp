@@ -26,7 +26,7 @@ import {
 const MenuIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>;
 const BackIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>;
 const SearchIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>;
-const TrashIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="#ea4335"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>; // Delete Icon
+const TrashIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="#ea4335"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>; 
 
 // Category Icons
 const ProgramIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>;
@@ -65,7 +65,7 @@ function App() {
   const [viewType, setViewType] = useState('dayGridMonth'); 
   const [modalOpen, setModalOpen] = useState(false);
   
-  // -- EVENT STATE (Added ID for editing) --
+  // -- EVENT STATE --
   const [newEvent, setNewEvent] = useState({ 
     id: null, title: '', start: '', end: '', color: '#4285F4', allDay: true, 
     type: 'Personal', houseName: '', celebrant: '' 
@@ -114,42 +114,69 @@ function App() {
     return new Date(dateObj.getTime() - offset).toISOString().slice(0, 16);
   };
 
+  const getEventDate = (isoString) => {
+      if(!isoString) return selectedDate; 
+      return isoString.split('T')[0];
+  };
+
+  const getEventTime = (isoString) => {
+      if(!isoString) return '09:00'; 
+      return isoString.split('T')[1] ? isoString.split('T')[1].slice(0,5) : '09:00';
+  };
+
   const initNewEvent = (startT, allDay, type) => {
-    const endT = new Date(startT); endT.setHours(endT.getHours() + 1);
+    let baseDate = startT;
     const color = type === 'Office' ? '#808080' : '#4285F4';
-    setNewEvent({ id: null, title: '', start: formatDateTime(startT), end: formatDateTime(endT), allDay, color, type, houseName: '', celebrant: '' });
+    setNewEvent({ 
+        id: null, title: '', start: formatDateTime(baseDate), end: '', allDay: false, 
+        color, type, houseName: '', celebrant: '' 
+    });
     setModalOpen(true);
   };
 
-  const handleDateClick = (arg) => { if (arg.view.type === 'dayGridMonth') { if (selectedDate === arg.dateStr) { calendarRef.current.getApi().changeView('timeGridDay', arg.dateStr); setViewType('timeGridDay'); window.history.pushState({ view: 'day' }, ''); } else { setSelectedDate(arg.dateStr); } } else { initNewEvent(arg.date, arg.allDay, 'Personal'); } };
+  const handleDateClick = (arg) => { 
+      if (arg.view.type === 'dayGridMonth') { 
+          if (selectedDate === arg.dateStr) { 
+              calendarRef.current.getApi().changeView('timeGridDay', arg.dateStr); 
+              setViewType('timeGridDay'); 
+              window.history.pushState({ view: 'day' }, ''); 
+          } else { 
+              setSelectedDate(arg.dateStr); 
+          } 
+      } else { 
+          initNewEvent(arg.date, arg.allDay, 'Personal'); 
+      } 
+  };
+  
   const handleDateSelect = (info) => { initNewEvent(new Date(info.startStr), info.allDay, 'Personal'); };
   
   const handleFabClick = (type) => {
     setFabOpen(false); 
-    const startT = new Date(selectedDate); startT.setHours(9, 0, 0, 0);
+    const startT = new Date(selectedDate); 
+    startT.setHours(9, 0, 0, 0);
     initNewEvent(startT, true, type);
   };
 
-  // --- HANDLE EVENT CLICK (OPEN EDIT MODAL) ---
   const handleEventClick = (info) => { 
-    if (info.view.type === 'dayGridMonth') return; // Prevent editing in Month view, only Day/Week
-    
     const e = info.event;
     const props = e.extendedProps || {};
-    
-    // Populate modal with existing data
     setNewEvent({
-        id: e.id,
-        title: e.title,
-        start: e.start ? formatDateTime(e.start) : '',
-        end: e.end ? formatDateTime(e.end) : '',
-        allDay: e.allDay,
-        color: e.backgroundColor,
-        type: props.type || 'Personal',
-        houseName: props.houseName || '',
-        celebrant: props.celebrant || ''
+        id: e.id, title: e.title, start: e.start ? formatDateTime(e.start) : '', end: e.end ? formatDateTime(e.end) : '',
+        allDay: e.allDay, color: e.backgroundColor, type: props.type || 'Personal', houseName: props.houseName || '', celebrant: props.celebrant || ''
     });
     setModalOpen(true);
+  };
+
+  const handleDateChangeUI = (e) => {
+      const newDate = e.target.value;
+      const currentTime = getEventTime(newEvent.start);
+      setNewEvent({ ...newEvent, start: `${newDate}T${currentTime}` });
+  };
+
+  const handleTimeChangeUI = (e) => {
+      const newTime = e.target.value;
+      const currentDate = getEventDate(newEvent.start);
+      setNewEvent({ ...newEvent, start: `${currentDate}T${newTime}` });
   };
 
   const handleSaveEvent = async () => {
@@ -158,27 +185,20 @@ function App() {
       if (calendarRef.current) calendarRef.current.getApi().unselect();
       
       const description = newEvent.type === 'Program' ? `House: ${newEvent.houseName} | Celebrant: ${newEvent.celebrant}` : "";
+      
+      const startDateObj = new Date(newEvent.start);
+      const endDateObj = new Date(startDateObj.getTime() + (60 * 60 * 1000));
+      const endDateISO = formatDateTime(endDateObj);
+
       const eventData = { 
-        uid: user.uid, 
-        title: newEvent.title, 
-        start: newEvent.start, 
-        end: newEvent.end || null, 
-        allDay: newEvent.allDay, 
-        backgroundColor: newEvent.color, 
-        borderColor: newEvent.color,
-        extendedProps: {
-            type: newEvent.type,
-            houseName: newEvent.houseName,
-            celebrant: newEvent.celebrant,
-            description: description
-        }
+        uid: user.uid, title: newEvent.title, start: newEvent.start, end: endDateISO, 
+        allDay: false, backgroundColor: newEvent.color, borderColor: newEvent.color,
+        extendedProps: { type: newEvent.type, houseName: newEvent.houseName, celebrant: newEvent.celebrant, description: description }
       };
 
       if (newEvent.id) {
-        // UPDATE EXISTING
         await updateDoc(doc(db, "events", newEvent.id), eventData);
       } else {
-        // CREATE NEW
         await addDoc(collection(db, "events"), eventData);
       }
     }
@@ -336,13 +356,17 @@ function App() {
           events={events}
           dayMaxEvents={true} 
           dateClick={handleDateClick}
-          eventClick={handleEventClick} // NEW CLICK HANDLER
+          eventClick={handleEventClick} 
           datesSet={handleDatesSet}
+          eventDisplay="block" // <--- ADDED: Forces events to be solid blocks
           eventTimeFormat={{ hour: 'numeric', minute: '2-digit', meridiem: 'short' }} 
           slotLabelFormat={{ hour: 'numeric', minute: '2-digit', meridiem: 'short' }} 
           allDaySlot={true}
           views={{
-            dayGridMonth: { dayHeaderFormat: { weekday: 'narrow' } },
+            dayGridMonth: { 
+                dayHeaderFormat: { weekday: 'narrow' },
+                displayEventTime: false // <--- ADDED: Hides time in Month View
+            },
             timeGridWeek: { dayHeaderFormat: { weekday: 'short', day: 'numeric', omitCommas: true } },
             timeGridDay: { dayHeaderFormat: { weekday: 'long', day: 'numeric' } } 
           }}
@@ -362,10 +386,8 @@ function App() {
         <>
           <div className="sidebar-overlay" style={{zIndex: 90}}></div>
           <div className="modal" style={{background: 'var(--sidebar-bg)', color: 'var(--text-color)'}}>
-            {/* Title for all */}
             <input style={{fontSize:'22px', border:'none', outline:'none', width:'100%', marginBottom:'10px', background: 'transparent', color: 'var(--text-color)'}} type="text" placeholder="Add title" value={newEvent.title} autoFocus onChange={(e) => setNewEvent({...newEvent, title: e.target.value})} />
             
-            {/* Conditional Fields for Program */}
             {newEvent.type === 'Program' && (
               <div style={{marginBottom: '15px', display: 'flex', flexDirection: 'column', gap: '10px'}}>
                 <input type="text" placeholder="House Name" value={newEvent.houseName} onChange={(e) => setNewEvent({...newEvent, houseName: e.target.value})} style={{width:'100%', padding:'10px', border:'1px solid var(--input-border)', borderRadius:'4px', background: 'var(--input-bg)', color: 'var(--text-color)', fontSize:'14px'}} />
@@ -373,15 +395,19 @@ function App() {
               </div>
             )}
 
-            {/* Time Fields for all */}
             <div style={{marginBottom: '15px', display: 'flex', flexDirection: 'column', gap: '12px'}}>
-              <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}><span style={{fontSize:'12px', color:'var(--sub-text)'}}>Starts</span><input type="datetime-local" value={newEvent.start} onChange={(e) => setNewEvent({...newEvent, start: e.target.value, allDay: false})} style={{border:'1px solid var(--input-border)', borderRadius:'4px', padding:'6px', background:'var(--input-bg)', color:'var(--text-color)', fontSize:'13px'}} /></div>
-              <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}><span style={{fontSize:'12px', color:'var(--sub-text)'}}>Ends</span><input type="datetime-local" value={newEvent.end} onChange={(e) => setNewEvent({...newEvent, end: e.target.value, allDay: false})} style={{border:'1px solid var(--input-border)', borderRadius:'4px', padding:'6px', background:'var(--input-bg)', color:'var(--text-color)', fontSize:'13px'}} /></div>
+              <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', padding:'8px', background:'var(--input-bg)', borderRadius:'6px', border:'1px solid var(--input-border)'}}>
+                 <span style={{fontSize:'13px', color:'var(--sub-text)'}}>Date</span>
+                 <input type="date" value={getEventDate(newEvent.start)} onChange={handleDateChangeUI} style={{border:'none', background:'transparent', color:'var(--text-color)', fontSize:'14px', outline:'none', textAlign:'right'}} />
+              </div>
+              <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', padding:'8px', background:'var(--input-bg)', borderRadius:'6px', border:'1px solid var(--input-border)'}}>
+                 <span style={{fontSize:'13px', color:'var(--sub-text)'}}>Time</span>
+                 <input type="time" value={getEventTime(newEvent.start)} onChange={handleTimeChangeUI} style={{border:'none', background:'transparent', color:'var(--text-color)', fontSize:'14px', outline:'none', textAlign:'right'}} />
+              </div>
             </div>
 
             <hr style={{border:'none', borderBottom:'1px solid var(--cal-border)', margin:'0 0 15px 0'}} />
             
-            {/* Color Picker (Hidden for Office - Fixed Grey) */}
             {newEvent.type !== 'Office' && (
               <div className="color-picker">
                 {['#4285F4', '#EA4335', '#FBBC04', '#34A853', '#9E69AF'].map(color => (
@@ -391,13 +417,9 @@ function App() {
             )}
 
             <div style={{display:'flex', justifyContent:'flex-end', gap:'10px', alignItems: 'center'}}>
-              {/* DELETE BUTTON (only if editing existing event) */}
               {newEvent.id && (
-                  <button onClick={handleDeleteEvent} style={{marginRight: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: '8px'}} title="Delete Event">
-                      <TrashIcon />
-                  </button>
+                  <button onClick={handleDeleteEvent} style={{marginRight: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: '8px'}} title="Delete Event"><TrashIcon /></button>
               )}
-              
               <button style={{background:'none', border:'none', color:'var(--sub-text)', padding:'10px'}} onClick={() => {setModalOpen(false); if(calendarRef.current) calendarRef.current.getApi().unselect();}}>Cancel</button>
               <button style={{background:'#1a73e8', color:'white', border:'none', borderRadius:'4px', padding:'8px 24px'}} onClick={handleSaveEvent}>Save</button>
             </div>
