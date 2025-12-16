@@ -30,7 +30,8 @@ const TrashIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="#e
 
 // Category Icons
 const ProgramIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>;
-const OfficeIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>;
+const HallIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>; 
+const OfficeIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>;
 const PersonalIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>;
 
 const SunIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="#FDB813"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 000-1.41.996.996 0 00-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>;
@@ -97,7 +98,48 @@ function App() {
   useEffect(() => { const unsubscribe = onAuthStateChanged(auth, (u) => { setUser(u); setLoading(false); }); return () => unsubscribe(); }, []);
   useEffect(() => { localStorage.setItem('appTheme', theme); }, [theme]);
   useEffect(() => { if (user) { const q = query(collection(db, "events"), where("uid", "==", user.uid)); const unsubscribe = onSnapshot(q, (s) => setEvents(s.docs.map(d => ({ id: d.id, ...d.data() })))); return () => unsubscribe(); } else { setEvents([]); } }, [user]);
-  useEffect(() => { const h = () => { if (viewType !== 'dayGridMonth' && calendarRef.current) { calendarRef.current.getApi().changeView('dayGridMonth'); setViewType('dayGridMonth'); } }; window.addEventListener('popstate', h); return () => window.removeEventListener('popstate', h); }, [viewType]);
+  
+  useEffect(() => { 
+    const handlePopState = (event) => {
+        const state = event.state; 
+
+        if (state && state.ui === 'sidebar') {
+            setSidebarOpen(true);
+        } else if (state && state.view) {
+            setSidebarOpen(false);
+            if (calendarRef.current) {
+                calendarRef.current.getApi().changeView(state.view);
+                setViewType(state.view);
+            }
+        } else {
+            setSidebarOpen(false);
+            if (calendarRef.current) {
+                calendarRef.current.getApi().changeView('dayGridMonth');
+                setViewType('dayGridMonth');
+            }
+        }
+    }; 
+    window.addEventListener('popstate', handlePopState); 
+    return () => window.removeEventListener('popstate', handlePopState); 
+  }, []);
+
+  const openSidebar = () => {
+      window.history.pushState({ui: 'sidebar'}, ''); 
+      setSidebarOpen(true);
+  };
+
+  const changeView = (newView) => {
+      window.history.pushState({view: newView}, ''); 
+      if (calendarRef.current) {
+          calendarRef.current.getApi().changeView(newView);
+          setViewType(newView);
+      }
+      setSidebarOpen(false);
+  };
+
+  const goBack = () => {
+      window.history.back(); 
+  };
 
   const toggleTheme = () => { setTheme(prev => prev === 'light' ? 'dark' : 'light'); };
 
@@ -119,14 +161,40 @@ function App() {
       return isoString.split('T')[0];
   };
 
-  const getEventTime = (isoString) => {
-      if(!isoString) return '09:00'; 
-      return isoString.split('T')[1] ? isoString.split('T')[1].slice(0,5) : '09:00';
+  // --- AM/PM TIME HELPERS ---
+  const getEventTimeParts = (isoString) => {
+      // Returns { hour: "01", minute: "30", ampm: "AM" }
+      if(!isoString) return { hour: "09", minute: "00", ampm: "AM" };
+      const timePart = isoString.split('T')[1];
+      if(!timePart) return { hour: "09", minute: "00", ampm: "AM" };
+      
+      let [h, m] = timePart.split(':');
+      let hourInt = parseInt(h);
+      let ampm = hourInt >= 12 ? 'PM' : 'AM';
+      
+      hourInt = hourInt % 12;
+      hourInt = hourInt ? hourInt : 12; // convert 0 to 12
+      
+      return { 
+          hour: hourInt.toString().padStart(2, '0'), 
+          minute: m.slice(0, 2), 
+          ampm 
+      };
+  };
+
+  const updateTimeFromParts = (currentIso, newHour, newMinute, newAmpm) => {
+      const datePart = currentIso.split('T')[0];
+      let h = parseInt(newHour);
+      if (newAmpm === 'PM' && h !== 12) h += 12;
+      if (newAmpm === 'AM' && h === 12) h = 0;
+      
+      const timeString = `${h.toString().padStart(2, '0')}:${newMinute}`;
+      return `${datePart}T${timeString}`;
   };
 
   const initNewEvent = (startT, allDay, type) => {
     let baseDate = startT;
-    const color = type === 'Office' ? '#808080' : '#4285F4';
+    const color = type === 'Office' ? '#808080' : type === 'Parish Hall' ? '#009688' : '#4285F4';
     setNewEvent({ 
         id: null, title: '', start: formatDateTime(baseDate), end: '', allDay: false, 
         color, type, houseName: '', celebrant: '' 
@@ -137,9 +205,10 @@ function App() {
   const handleDateClick = (arg) => { 
       if (arg.view.type === 'dayGridMonth') { 
           if (selectedDate === arg.dateStr) { 
-              calendarRef.current.getApi().changeView('timeGridDay', arg.dateStr); 
-              setViewType('timeGridDay'); 
-              window.history.pushState({ view: 'day' }, ''); 
+              const dayView = 'timeGridDay';
+              window.history.pushState({ view: dayView }, ''); 
+              calendarRef.current.getApi().changeView(dayView, arg.dateStr); 
+              setViewType(dayView); 
           } else { 
               setSelectedDate(arg.dateStr); 
           } 
@@ -169,14 +238,25 @@ function App() {
 
   const handleDateChangeUI = (e) => {
       const newDate = e.target.value;
-      const currentTime = getEventTime(newEvent.start);
-      setNewEvent({ ...newEvent, start: `${newDate}T${currentTime}` });
+      const parts = getEventTimeParts(newEvent.start);
+      // Reconstruct using helper to maintain AM/PM logic if needed, but simple split/join works too
+      // But updateTimeFromParts is safer
+      const tempIso = `${newDate}T00:00`; // Dummy time
+      setNewEvent({ ...newEvent, start: updateTimeFromParts(tempIso, parts.hour, parts.minute, parts.ampm) });
   };
 
-  const handleTimeChangeUI = (e) => {
-      const newTime = e.target.value;
-      const currentDate = getEventDate(newEvent.start);
-      setNewEvent({ ...newEvent, start: `${currentDate}T${newTime}` });
+  // Custom Time Handlers
+  const handleHourChange = (e) => {
+      const parts = getEventTimeParts(newEvent.start);
+      setNewEvent({ ...newEvent, start: updateTimeFromParts(newEvent.start, e.target.value, parts.minute, parts.ampm) });
+  };
+  const handleMinuteChange = (e) => {
+      const parts = getEventTimeParts(newEvent.start);
+      setNewEvent({ ...newEvent, start: updateTimeFromParts(newEvent.start, parts.hour, e.target.value, parts.ampm) });
+  };
+  const handleAmpmChange = (e) => {
+      const parts = getEventTimeParts(newEvent.start);
+      setNewEvent({ ...newEvent, start: updateTimeFromParts(newEvent.start, parts.hour, parts.minute, e.target.value) });
   };
 
   const handleSaveEvent = async () => {
@@ -214,16 +294,21 @@ function App() {
   const handleDatesSet = (dateInfo) => setCurrentTitle(dateInfo.view.title);
   const getGreeting = () => { const h = new Date().getHours(); return h<12?"Good Morning":h<18?"Good Afternoon":"Good Evening"; };
 
+  // Generate options for dropdowns
+  const hours = Array.from({length: 12}, (_, i) => (i + 1).toString().padStart(2, '0'));
+  const minutes = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'];
+
   if (loading) return <div style={{height:'100dvh', display:'flex', alignItems:'center', justifyContent:'center', background: '#121212', color: 'white'}}>Loading...</div>;
   if (!user) return (
     <div style={{position: 'fixed', top: 0, left: 0, width: '100%', height: '100dvh', overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundImage: "linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/church.jpg')", backgroundSize: 'cover', backgroundPosition: 'center', fontFamily: "sans-serif"}}>
       <div style={{background: 'rgba(255, 255, 255, 0.08)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', padding: '25px 20px', borderRadius: '30px', border: '1px solid rgba(255, 255, 255, 0.2)', boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)', width: '85%', maxWidth: '350px', textAlign: 'center', color: 'white', boxSizing: 'border-box', maxHeight: '85vh', overflowY: 'auto'}}>
-        <h1 style={{ fontSize: '28px', fontWeight: '700', margin: '0 0 8px 0', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>Neeloor Parish</h1>
+        <h1 style={{ fontSize: '28px', fontWeight: '700', margin: '0 0 8px 0', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>Parish Calendar</h1>
         <p style={{ fontSize: '14px', opacity: 0.9, margin: '0 0 25px 0' }}>{isForgotPassword ? "Reset Password" : isRegistering ? "Create Account" : "Sign In"}</p>
         {loginError && <div style={{ background: 'rgba(220, 53, 69, 0.8)', padding: '10px', borderRadius: '12px', marginBottom: '20px', fontSize: '13px' }}>{loginError}</div>}
         {successMsg && <div style={{ background: 'rgba(40, 167, 69, 0.8)', padding: '10px', borderRadius: '12px', marginBottom: '20px', fontSize: '13px' }}>{successMsg}</div>}
         <form onSubmit={isForgotPassword ? handleForgotPassword : (isRegistering ? handleRegister : handleUsernameLogin)}>
-          {isRegistering && !isForgotPassword && <InputWithIcon icon={<UserIcon />} type="text" placeholder="Full Name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required />}
+          {isRegistering && !isForgotPassword && <InputWithIcon icon={<UserIcon />} type="text" placeholder="Parish Name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required />}
+          
           {!isForgotPassword && <InputWithIcon icon={<UserIcon />} type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />}
           {(isRegistering || isForgotPassword) && <InputWithIcon icon={<EmailIcon />} type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />}
           {!isForgotPassword && (
@@ -245,7 +330,7 @@ function App() {
           </>
         )}
       </div>
-      <div style={{ position: 'absolute', bottom: '15px', color: 'rgba(255,255,255,0.6)', fontSize: '11px' }}>© 2025 Neeloor Parish</div>
+      <div style={{ position: 'absolute', bottom: '15px', color: 'rgba(255,255,255,0.6)', fontSize: '11px' }}>© 2025 Parish Calendar</div>
     </div>
   );
 
@@ -260,6 +345,8 @@ function App() {
     '--input-border': theme === 'dark' ? '#444444' : '#dadce0',
     '--highlight-bg': theme === 'dark' ? 'rgba(66, 133, 244, 0.25)' : 'rgba(26, 115, 232, 0.15)',
   };
+
+  const timeParts = getEventTimeParts(newEvent.start);
 
   return (
     <div className="mobile-container" style={{height:'100dvh', display:'flex', flexDirection:'column', overflow:'hidden', backgroundColor: 'var(--bg-color)', color: 'var(--text-color)', ...appStyle}}>
@@ -278,11 +365,22 @@ function App() {
         .fc-theme-standard td, .fc-theme-standard th { border-color: var(--cal-border) !important; }
         .fc-col-header-cell-cushion, .fc-daygrid-day-number, .fc-list-day-text, .fc-list-day-side-text { color: var(--text-color) !important; }
         .fc-timegrid-slot-label-cushion { color: var(--sub-text) !important; }
+
+        /* --- SIDEBAR MENU STYLES --- */
+        .menu-item { padding: 10px 24px; cursor: pointer; font-size: 14px; font-weight: 500; border-radius: 0 24px 24px 0; margin-right: 8px; }
+        .menu-item:hover { background-color: var(--highlight-bg); }
+        .menu-item.active { background-color: var(--highlight-bg); color: #1a73e8; }
       `}</style>
 
       <header className="mobile-header" style={{flexShrink: 0, borderBottom: '1px solid var(--cal-border)', backgroundColor: 'var(--bg-color)'}}>
         <div className="header-left">
-          {viewType === 'dayGridMonth' ? ( <button className="icon-btn" onClick={() => setSidebarOpen(true)} style={{color: 'var(--text-color)'}}><MenuIcon /></button> ) : ( <button className="icon-btn" onClick={() => {calendarRef.current.getApi().changeView('dayGridMonth'); setViewType('dayGridMonth');}} style={{color: 'var(--text-color)'}}><BackIcon /></button> )}
+          {viewType === 'dayGridMonth' ? ( 
+              // Open Sidebar with PUSH STATE
+              <button className="icon-btn" onClick={openSidebar} style={{color: 'var(--text-color)'}}><MenuIcon /></button> 
+          ) : ( 
+              // Go Back logic (Pop State)
+              <button className="icon-btn" onClick={goBack} style={{color: 'var(--text-color)'}}><BackIcon /></button> 
+          )}
           <div style={{display:'flex', flexDirection:'column', marginLeft:'8px'}}><span className="header-title" style={{fontSize:'18px', lineHeight:'1.2', color: 'var(--header-text)'}}>{currentTitle}</span><span style={{fontSize:'11px', color: 'var(--sub-text)'}}>{getGreeting()}, {user.displayName}</span></div>
         </div>
         <div className="header-right" style={{position:'relative'}}>
@@ -317,22 +415,22 @@ function App() {
 
       {sidebarOpen && (
         <>
-          <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)}></div>
+          <div className="sidebar-overlay" onClick={() => window.history.back()}></div>
           <div className="sidebar" style={{background: 'var(--sidebar-bg)'}}>
             <div className="sidebar-header" style={{flexDirection:'column', alignItems:'flex-start', gap:'5px', borderBottom: '1px solid var(--cal-border)'}}>
-              <span style={{fontSize:'20px', fontWeight:'bold', color:'#1a73e8'}}>Neeloor Parish</span>
+              <span style={{fontSize:'20px', fontWeight:'bold', color:'#1a73e8'}}>Parish Calendar</span>
               <span style={{fontSize:'14px', color:'var(--sub-text)', fontWeight:'normal'}}>{user.email}</span>
             </div>
             <div style={{padding:'10px 0'}}>
-              <div className={`menu-item ${viewType === 'listWeek' ? 'active' : ''}`} onClick={() => { calendarRef.current.getApi().changeView('listWeek'); setViewType('listWeek'); setSidebarOpen(false); }} style={{color: 'var(--text-color)'}}>Schedule</div>
-              <div className={`menu-item ${viewType === 'dayGridMonth' ? 'active' : ''}`} onClick={() => { calendarRef.current.getApi().changeView('dayGridMonth'); setViewType('dayGridMonth'); setSidebarOpen(false); }} style={{color: 'var(--text-color)'}}>Month</div>
-              <div className={`menu-item ${viewType === 'timeGridWeek' ? 'active' : ''}`} onClick={() => { calendarRef.current.getApi().changeView('timeGridWeek'); setViewType('timeGridWeek'); setSidebarOpen(false); }} style={{color: 'var(--text-color)'}}>Week</div>
+              <div className={`menu-item ${viewType === 'listWeek' ? 'active' : ''}`} onClick={() => changeView('listWeek')} style={{ color: viewType === 'listWeek' ? '#1a73e8' : 'var(--text-color)' }}>Schedule</div>
+              <div className={`menu-item ${viewType === 'dayGridMonth' ? 'active' : ''}`} onClick={() => changeView('dayGridMonth')} style={{ color: viewType === 'dayGridMonth' ? '#1a73e8' : 'var(--text-color)' }}>Month</div>
+              <div className={`menu-item ${viewType === 'timeGridWeek' ? 'active' : ''}`} onClick={() => changeView('timeGridWeek')} style={{ color: viewType === 'timeGridWeek' ? '#1a73e8' : 'var(--text-color)' }}>Week</div>
               <hr style={{border:'none', borderTop:'1px solid var(--cal-border)', margin:'10px 20px'}} />
               <div onClick={toggleTheme} style={{padding:'10px 24px', display:'flex', alignItems:'center', gap:'10px', cursor:'pointer', color: 'var(--text-color)'}}>{theme === 'light' ? <MoonIcon /> : <SunIcon />}<span>{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span></div>
               <hr style={{border:'none', borderTop:'1px solid var(--cal-border)', margin:'10px 20px'}} />
               <div style={{padding:'0 24px'}}>
                 <span style={{fontSize:'12px', color:'var(--sub-text)', fontWeight:'500', display:'block', marginBottom:'5px'}}>JUMP TO DATE</span>
-                <input type="date" onChange={(e) => { calendarRef.current.getApi().gotoDate(e.target.value); setSelectedDate(e.target.value); setSidebarOpen(false); }} style={{width:'100%', padding:'8px', border:'1px solid var(--input-border)', borderRadius:'4px', color:'var(--text-color)', background: 'var(--input-bg)'}} />
+                <input type="date" onChange={(e) => { calendarRef.current.getApi().gotoDate(e.target.value); setSelectedDate(e.target.value); window.history.back(); }} style={{width:'100%', padding:'8px', border:'1px solid var(--input-border)', borderRadius:'4px', color:'var(--text-color)', background: 'var(--input-bg)'}} />
               </div>
               <div style={{padding:'20px 24px', marginTop:'20px'}}>
                 <button onClick={handleLogout} style={{width:'100%', padding:'10px', background:'#fee2e2', color:'#b91c1c', border:'none', borderRadius:'8px', cursor:'pointer'}}>Sign Out</button>
@@ -358,14 +456,14 @@ function App() {
           dateClick={handleDateClick}
           eventClick={handleEventClick} 
           datesSet={handleDatesSet}
-          eventDisplay="block" // <--- ADDED: Forces events to be solid blocks
-          eventTimeFormat={{ hour: 'numeric', minute: '2-digit', meridiem: 'short' }} 
-          slotLabelFormat={{ hour: 'numeric', minute: '2-digit', meridiem: 'short' }} 
+          eventDisplay="block" 
+          eventTimeFormat={{ hour: 'numeric', minute: '2-digit', meridiem: 'short', hour12: true }} 
+          slotLabelFormat={{ hour: 'numeric', minute: '2-digit', meridiem: 'short', hour12: true }} 
           allDaySlot={true}
           views={{
             dayGridMonth: { 
                 dayHeaderFormat: { weekday: 'narrow' },
-                displayEventTime: false // <--- ADDED: Hides time in Month View
+                displayEventTime: false 
             },
             timeGridWeek: { dayHeaderFormat: { weekday: 'short', day: 'numeric', omitCommas: true } },
             timeGridDay: { dayHeaderFormat: { weekday: 'long', day: 'numeric' } } 
@@ -376,6 +474,7 @@ function App() {
       {fabOpen && (
         <div style={{position:'fixed', bottom:'90px', right:'24px', display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'12px', zIndex:45}}>
           <div style={{display:'flex', alignItems:'center', gap:'10px'}}><span style={{background:'var(--sidebar-bg)', color:'var(--text-color)', padding:'4px 8px', borderRadius:'4px', boxShadow:'0 1px 2px rgba(0,0,0,0.2)', fontSize:'12px'}}>Program</span><button onClick={() => handleFabClick('Program')} style={{width:'48px', height:'48px', borderRadius:'50%', background:'#4285F4', border:'none', boxShadow:'0 2px 6px rgba(0,0,0,0.3)', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer'}}><ProgramIcon /></button></div>
+          <div style={{display:'flex', alignItems:'center', gap:'10px'}}><span style={{background:'var(--sidebar-bg)', color:'var(--text-color)', padding:'4px 8px', borderRadius:'4px', boxShadow:'0 1px 2px rgba(0,0,0,0.2)', fontSize:'12px'}}>Parish Hall</span><button onClick={() => handleFabClick('Parish Hall')} style={{width:'48px', height:'48px', borderRadius:'50%', background:'#009688', border:'none', boxShadow:'0 2px 6px rgba(0,0,0,0.3)', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer'}}><HallIcon /></button></div>
           <div style={{display:'flex', alignItems:'center', gap:'10px'}}><span style={{background:'var(--sidebar-bg)', color:'var(--text-color)', padding:'4px 8px', borderRadius:'4px', boxShadow:'0 1px 2px rgba(0,0,0,0.2)', fontSize:'12px'}}>Office</span><button onClick={() => handleFabClick('Office')} style={{width:'40px', height:'40px', borderRadius:'50%', background:'#808080', border:'none', boxShadow:'0 2px 6px rgba(0,0,0,0.3)', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer'}}><OfficeIcon /></button></div>
           <div style={{display:'flex', alignItems:'center', gap:'10px'}}><span style={{background:'var(--sidebar-bg)', color:'var(--text-color)', padding:'4px 8px', borderRadius:'4px', boxShadow:'0 1px 2px rgba(0,0,0,0.2)', fontSize:'12px'}}>Personal</span><button onClick={() => handleFabClick('Personal')} style={{width:'40px', height:'40px', borderRadius:'50%', background:'#F4511E', border:'none', boxShadow:'0 2px 6px rgba(0,0,0,0.3)', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer'}}><PersonalIcon /></button></div>
         </div>
@@ -386,29 +485,76 @@ function App() {
         <>
           <div className="sidebar-overlay" style={{zIndex: 90}}></div>
           <div className="modal" style={{background: 'var(--sidebar-bg)', color: 'var(--text-color)'}}>
-            <input style={{fontSize:'22px', border:'none', outline:'none', width:'100%', marginBottom:'10px', background: 'transparent', color: 'var(--text-color)'}} type="text" placeholder="Add title" value={newEvent.title} autoFocus onChange={(e) => setNewEvent({...newEvent, title: e.target.value})} />
             
+            {/* 1. TITLE */}
+            <input 
+              style={{fontSize:'22px', border:'none', outline:'none', width:'100%', marginBottom:'10px', background: 'transparent', color: 'var(--text-color)'}} 
+              type="text" 
+              placeholder={`${newEvent.type} Title`} 
+              value={newEvent.title} 
+              autoFocus 
+              onChange={(e) => setNewEvent({...newEvent, title: e.target.value})} 
+            />
+            
+            {/* 2. HOUSE NAME (Program Only) */}
             {newEvent.type === 'Program' && (
-              <div style={{marginBottom: '15px', display: 'flex', flexDirection: 'column', gap: '10px'}}>
-                <input type="text" placeholder="House Name" value={newEvent.houseName} onChange={(e) => setNewEvent({...newEvent, houseName: e.target.value})} style={{width:'100%', padding:'10px', border:'1px solid var(--input-border)', borderRadius:'4px', background: 'var(--input-bg)', color: 'var(--text-color)', fontSize:'14px'}} />
-                <input type="text" placeholder="Celebrant" value={newEvent.celebrant} onChange={(e) => setNewEvent({...newEvent, celebrant: e.target.value})} style={{width:'100%', padding:'10px', border:'1px solid var(--input-border)', borderRadius:'4px', background: 'var(--input-bg)', color: 'var(--text-color)', fontSize:'14px'}} />
-              </div>
+                <input 
+                    type="text" 
+                    placeholder="House Name" 
+                    value={newEvent.houseName} 
+                    onChange={(e) => setNewEvent({...newEvent, houseName: e.target.value})} 
+                    style={{width:'100%', padding:'10px', marginBottom:'15px', border:'1px solid var(--input-border)', borderRadius:'4px', background: 'var(--input-bg)', color: 'var(--text-color)', fontSize:'14px'}} 
+                />
             )}
 
-            <div style={{marginBottom: '15px', display: 'flex', flexDirection: 'column', gap: '12px'}}>
-              <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', padding:'8px', background:'var(--input-bg)', borderRadius:'6px', border:'1px solid var(--input-border)'}}>
-                 <span style={{fontSize:'13px', color:'var(--sub-text)'}}>Date</span>
-                 <input type="date" value={getEventDate(newEvent.start)} onChange={handleDateChangeUI} style={{border:'none', background:'transparent', color:'var(--text-color)', fontSize:'14px', outline:'none', textAlign:'right'}} />
-              </div>
+            {/* 3. TIME PICKER (CUSTOM AM/PM) */}
+            <div style={{marginBottom: '15px'}}>
               <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', padding:'8px', background:'var(--input-bg)', borderRadius:'6px', border:'1px solid var(--input-border)'}}>
                  <span style={{fontSize:'13px', color:'var(--sub-text)'}}>Time</span>
-                 <input type="time" value={getEventTime(newEvent.start)} onChange={handleTimeChangeUI} style={{border:'none', background:'transparent', color:'var(--text-color)', fontSize:'14px', outline:'none', textAlign:'right'}} />
+                 <div style={{display:'flex', gap:'5px', alignItems:'center'}}>
+                    {/* Hour */}
+                    <select value={timeParts.hour} onChange={handleHourChange} style={{border:'none', background:'transparent', color:'var(--text-color)', fontSize:'14px', outline:'none', appearance:'none', textAlign:'right'}}>
+                        {hours.map(h => <option key={h} value={h}>{h}</option>)}
+                    </select>
+                    <span>:</span>
+                    {/* Minute */}
+                    <select value={timeParts.minute} onChange={handleMinuteChange} style={{border:'none', background:'transparent', color:'var(--text-color)', fontSize:'14px', outline:'none', appearance:'none'}}>
+                        {minutes.map(m => <option key={m} value={m}>{m}</option>)}
+                    </select>
+                    {/* AM/PM */}
+                    <select value={timeParts.ampm} onChange={handleAmpmChange} style={{border:'none', background:'transparent', color:'var(--text-color)', fontSize:'14px', outline:'none', appearance:'none', marginLeft:'5px', fontWeight:'bold'}}>
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                 </div>
               </div>
             </div>
+            
+            {/* 4. CELEBRANT (Program Only) */}
+            {newEvent.type === 'Program' && (
+                <input 
+                    type="text" 
+                    placeholder="Celebrant" 
+                    value={newEvent.celebrant} 
+                    onChange={(e) => setNewEvent({...newEvent, celebrant: e.target.value})} 
+                    style={{width:'100%', padding:'10px', marginBottom:'15px', border:'1px solid var(--input-border)', borderRadius:'4px', background: 'var(--input-bg)', color: 'var(--text-color)', fontSize:'14px'}} 
+                />
+            )}
+
+            {/* 5. DATE (Only on Edit) */}
+            {newEvent.id && (
+               <div style={{marginBottom: '15px'}}>
+                  <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', padding:'8px', background:'var(--input-bg)', borderRadius:'6px', border:'1px solid var(--input-border)'}}>
+                     <span style={{fontSize:'13px', color:'var(--sub-text)'}}>Date (Edit)</span>
+                     <input type="date" value={getEventDate(newEvent.start)} onChange={handleDateChangeUI} style={{border:'none', background:'transparent', color:'var(--text-color)', fontSize:'14px', outline:'none', textAlign:'right'}} />
+                  </div>
+               </div>
+            )}
 
             <hr style={{border:'none', borderBottom:'1px solid var(--cal-border)', margin:'0 0 15px 0'}} />
             
-            {newEvent.type !== 'Office' && (
+            {/* HIDE COLOR PICKER FOR OFFICE AND PARISH HALL */}
+            {newEvent.type !== 'Office' && newEvent.type !== 'Parish Hall' && (
               <div className="color-picker">
                 {['#4285F4', '#EA4335', '#FBBC04', '#34A853', '#9E69AF'].map(color => (
                   <div key={color} className={`color-option ${newEvent.color === color ? 'selected' : ''}`} style={{backgroundColor: color}} onClick={() => setNewEvent({...newEvent, color})}></div>
